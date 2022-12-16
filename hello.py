@@ -1,13 +1,25 @@
+from datetime import datetime
+
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
+from flask_moment import Moment
+
+from forms import NameForm
+
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
+moment = Moment(app)
+app.config['SECRET_KEY'] = 'sdkjfhiudshfiudshfhsduifiushdnfsdfnisduf'
 
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    name = None
+    form = NameForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        form.name.data = ''
+    return render_template('index.html', form=form, name=name, current_time=datetime.utcnow())
 
 
 @app.route('/user/<name>/')
